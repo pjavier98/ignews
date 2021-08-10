@@ -1,10 +1,11 @@
 import {getUserByStripeCustomerId} from "../faunaDB/collections/usersQueries";
 import {stripe} from "../../../../services/stripe";
-import {createSubscription} from "../faunaDB/collections/subscriptionsQueries";
+import {createSubscription, updateSubscription} from "../faunaDB/collections/subscriptionsQueries";
 
 export async function saveSubscription(
   subscriptionId: string,
   customerId: string,
+  createAction = false
 ) {
   const userRef = await getUserByStripeCustomerId(customerId)
 
@@ -17,7 +18,13 @@ export async function saveSubscription(
     price_id: subscription.items.data[0].price.id
   }
 
-  await createSubscription({
-    data: subscriptionData
-  })
+  if (createAction) {
+    await createSubscription({
+      data: subscriptionData
+    })
+  } else {
+    await updateSubscription({
+      data: subscriptionData
+    })
+  }
 }
