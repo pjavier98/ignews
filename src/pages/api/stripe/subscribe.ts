@@ -4,7 +4,7 @@ import { getSession } from "next-auth/client";
 import {stripe} from "../../../services/stripe";
 import {getUserByEmail, updateUser} from "../_lib/faunaDB/collections/usersQueries";
 
-export default async (request: NextApiRequest, response: NextApiResponse) => {
+export default async function Subscribe(request: NextApiRequest, response: NextApiResponse) {
   if (request.method === 'POST') {
     const productId = 'price_1JMbx1Dh7PKaD9JlU8bPQxiv'
 
