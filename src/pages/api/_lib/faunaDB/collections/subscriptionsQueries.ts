@@ -67,3 +67,28 @@ export const updateSubscription = async ({ data }: NewSubscription): Promise<voi
     )
   )
 }
+
+export const getUserSubscription = async (email: string): Promise<any> => {
+  return fauna.query(
+    q.Get(
+      q.Intersection([
+        q.Match(
+          q.Index('subscription_by_user_ref'),
+          q.Select(
+            'ref',
+            q.Get(
+              q.Match(
+                q.Index('user_by_email'),
+                q.Casefold(email)
+              )
+            )
+          )
+        ),
+        q.Match(
+          q.Index('subscription_by_status'),
+          'active'
+        )
+      ])
+    )
+  )
+}
