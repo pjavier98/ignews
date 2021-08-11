@@ -45,7 +45,7 @@ export const getAllPosts = async (): Promise<PostType[]> => {
 }
 
 type getPostProps = {
-  req:  IncomingMessage & {cookies: NextApiRequestCookies};
+  req?:  IncomingMessage & {cookies: NextApiRequestCookies};
   slug: string;
 }
 
@@ -58,6 +58,25 @@ export const getPost = async ({ req, slug }: getPostProps): Promise<SinglePostTy
     slug,
     title: RichText.asText(response.data.title),
     content: RichText.asHtml(response.data.content),
+    updatedAt: new Date(response.last_publication_date).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }),
+  }
+
+  return post
+}
+
+export const getPostPreview = async ({ slug }: getPostProps): Promise<SinglePostType> => {
+  const prismic = getPrismicClient()
+
+  const response = await prismic.getByUID('post', String(slug), {})
+
+  const post = {
+    slug,
+    title: RichText.asText(response.data.title),
+    content: RichText.asHtml(response.data.content.splice(0, 3)),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: 'long',
